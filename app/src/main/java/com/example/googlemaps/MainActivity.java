@@ -70,8 +70,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         markerOptions.title(latLng.toString());
         this.mapa.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         Marker marker = this.mapa.addMarker(markerOptions);
-        marker.showInfoWindow();
+        //marker.showInfoWindow();
         this.AddMarker(latLng);
+        mapa.setInfoWindowAdapter(new InfoWindow(getApplicationContext(), "prueba"));
     }
 
     @Override
@@ -84,7 +85,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void AddMarker(LatLng latLng) {
         String latitud= String.valueOf(latLng.latitude);
         String longitud = String.valueOf(latLng.longitude);
+        System.out.println("Latitud: "+latitud+" y longitud: "+longitud);
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?fields=name&location="+latitud+","+longitud+"&radius=1500&type=bar&key=AIzaSyB5MkIB5lNnQH1kC1tZ3ATeEsv7z66moKs";
+        //String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?fields=name&location=-1.0113558476088707,-79.46938086135764&radius=1500&type=bar&key=AIzaSyB5MkIB5lNnQH1kC1tZ3ATeEsv7z66moKs";
+
         System.out.println("ENTRO A AddMarker");
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -98,15 +102,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Gson gson = new Gson();
                             Lugar[] Lugars = gson.fromJson(JSONarray.toString(), Lugar[].class);
                             for (int i = 0; i < Lugars.length; i++) {
-                                System.out.println("Ubicación: "+ (Lugars[i].geometry.location).toString());
-                            /*map.addMarker(new MarkerOptions()
-                                    .poLugarn(Lugars[i].posicion)
-                                    .title(Lugars[i].titulo)).setTag(Lugars[i]);
-                            if (Lugars.length - 1 == i) {
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(Lugars[i].posicion, 18));
-                            }*/
+                                System.out.println("Ubicación LAT: "+ String.valueOf(Lugars[i].geometry.location.lat));
+                                System.out.println("Ubicación LOG: "+ String.valueOf(Lugars[i].geometry.location.lng));
+                                LatLng posicion = new LatLng(Lugars[i].geometry.location.lat, Lugars[i].geometry.location.lng);
+                                /*mapa.addMarker(new MarkerOptions()
+                                        .position(new LatLng(Lugars[i].geometry.location.lat, Lugars[i].geometry.location.lng))
+                                        .title(Lugars[i].name)).setTag(Lugars[i]);*/
+
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                markerOptions.position(posicion);
+                                markerOptions.title(posicion.toString());
+                                //mapa.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                                Marker marker = mapa.addMarker(markerOptions);
+
+                                /*if (Lugars.length - 1 == i) {
+                                    mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(posicion, 18));
+                                }*/
                             }
-                            mapa.setInfoWindowAdapter(new InfoWindow(getApplicationContext(), "prueba"));
+
                         } catch (JSONException e) {
                             System.out.println("Error JSONARRAY: " + e.toString());
                         }

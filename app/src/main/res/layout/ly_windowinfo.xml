@@ -36,13 +36,14 @@
             android:text="Ubicación:"/>
 
         <TextView
-            android:id="@+id/lblhorarios"
-            android:textSize="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/lblhorarios"
+            android:textSize="15sp"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
-            android:text="Horarios:"/>
+            android:text="Horarios"/>
+
     </LinearLayout>
 
 </LinearLayout>
