@@ -1,6 +1,7 @@
 package com.example.googlemaps;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
@@ -9,15 +10,21 @@ import java.util.ArrayList;
  */
 public class Lugar {
     public transient String business_status;
+    @SerializedName("geometry")
     public Geometry geometry;
+    @SerializedName("icon")
     public String icon;
     public transient String icon_background_color;
     public transient String icon_mask_base_uri;
+    @SerializedName("name")
     public String name;
+    @SerializedName("opening_hours")
     public Opening_hours opening_hours;
+    @SerializedName("place_id")
     public String place_id;
     public transient String reference;
     public transient String scope;
     public transient ArrayList<String> types;
+    @SerializedName("vicinity")
     public String vicinity;
 }
