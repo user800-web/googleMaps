@@ -1,9 +1,11 @@
 package com.example.googlemaps;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Opening_hours {
-    public boolean opening_hours;
-    public CharSequence getOpening_hours(){
-        String str = Boolean.toString(opening_hours);
-        return str;
+    @SerializedName("open_now")
+    public boolean open_now = false;
+
+    public Opening_hours() {
     }
 }

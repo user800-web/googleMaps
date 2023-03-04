@@ -23,6 +23,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -41,6 +42,7 @@ import java.io.Console;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener {
     GoogleMap mapa;
+    Lugar[] Lugars;
     public RequestQueue cola;
 
     @Override
@@ -101,17 +103,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mapa = googleMap;
         mapa.setOnMapClickListener(this);
-        //this.AddMarker();
+        LatLng positionInitial = new LatLng(48.858975152639175, 2.355355131625614);
+        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(positionInitial, 14));
+        mapa.setInfoWindowAdapter(new InfoWindow(this, "mostrarInfo"));
+        mapa.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            //para esconder Info
+            @Override
+            public void onInfoWindowClick(@NonNull Marker marker) {
+                marker.hideInfoWindow();
+            }
+        });
+        /* Agregar el listener al mapa
+        mapa.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // Aquí puedes manejar el evento de clic en el marcador
+                System.out.println("SE DIÓ CLIC EN UN MARCADOR: "+ ((Lugar)marker.getTag()).place_id);
+                mapa.setInfoWindowAdapter(new InfoWindow(getApplicationContext(), "personal"));
+                return true;
+            }
+        });*/
     }
 
     public void AddMarker(LatLng latLng) {
         String latitud= String.valueOf(latLng.latitude);
         String longitud = String.valueOf(latLng.longitude);
         System.out.println("Latitud: "+latitud+" y longitud: "+longitud);
-        //String url = "https://my-json-server.typicode.com/RobertoSuarez/mymap/sitios";
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?fields=name&location="+latitud+","+longitud+"&radius=1500&type=bar&key=AIzaSyB5MkIB5lNnQH1kC1tZ3ATeEsv7z66moKs";
-        //String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?fields=name&location=-1.0113558476088707,-79.46938086135764&radius=1500&type=bar&key=AIzaSyB5MkIB5lNnQH1kC1tZ3ATeEsv7z66moKs";
-
         System.out.println("ENTRO A AddMarker");
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -119,22 +137,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onResponse(String response) {
                         JSONObject JSONlista = null;
                         try {
-
                             JSONlista = new JSONObject(response);
                             JSONArray JSONarray = JSONlista.getJSONArray("results");
                             Gson gson = new Gson();
-                            Lugar[] Lugars = gson.fromJson(JSONarray.toString(), Lugar[].class);
+                            Lugars = gson.fromJson(JSONarray.toString(), Lugar[].class);
                             System.out.println("Elemntos de array"+Lugars.length);
                             for (int i = 0; i < Lugars.length; i++) {
-                                System.out.println("ENTRO EN RESPONSE");
-                                System.out.println("Ubicación LAT: "+ String.valueOf(Lugars[i].geometry.location.lat));
-                                System.out.println("Ubicación LOG: "+ String.valueOf(Lugars[i].geometry.location.lng));
                                 LatLng posicion = new LatLng(Lugars[i].geometry.location.lat, Lugars[i].geometry.location.lng);
                                 /*mapa.addMarker(new MarkerOptions()
                                         .position(new LatLng(Lugars[i].geometry.location.lat, Lugars[i].geometry.location.lng))
                                         .title(Lugars[i].name)).setTag(Lugars[i]);*/
 
-                                mapa.addMarker(new MarkerOptions().position(posicion));
+                                mapa.addMarker(new MarkerOptions()
+                                        .position(posicion)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                        .title("dddd")).setTag(Lugars[i]);
                             }
 
                         } catch (JSONException e) {
@@ -151,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         );
         cola.add(stringRequest);
     }
-
     public void aumentar(View view) {
         //CameraUpdateFactory.zoomIn();
         float maxZoom = mapa.getMaxZoomLevel();
@@ -160,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             CameraUpdate zoomIn = CameraUpdateFactory.zoomIn();
             mapa.moveCamera(zoomIn);
         }
-        System.out.println("EN AUMENTAR");
     }
 
     public void alejar(View view) {
@@ -169,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (currentZoom < minZoom) {
             mapa.moveCamera(CameraUpdateFactory.zoomOut());
         }
-        System.out.println("EN ALEJAR");
     }
 
     public void satelite(View view) {

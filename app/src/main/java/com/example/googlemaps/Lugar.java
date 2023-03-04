@@ -20,6 +20,8 @@ public class Lugar {
     public String name;
     @SerializedName("opening_hours")
     public Opening_hours opening_hours;
+    @SerializedName("photos")
+    public Photos[] photos;
     @SerializedName("place_id")
     public String place_id;
     public transient String reference;
